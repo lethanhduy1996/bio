@@ -12,112 +12,81 @@
   <nav class="nav">
     <a class="brand" href="index.html">Duy Lê Thành</a>
     <div class="nav-links"><a href="index.html">Về trang bio</a></div>
-    <div class="nav-actions"><button class="icon-btn" id="themeBtn" type="button">☾</button></div>
   </nav>
   <main class="wrap" style="padding:28px 0 60px">
     <div id="loginView" class="card-stack login-box">
       <div style="padding:22px">
         <div class="label">Khu vực Admin</div>
-        <h2 style="margin-bottom:8px">Đăng nhập để up liên kết</h2>
-        <p class="notice">Chỉ admin mới thêm / sửa / xóa link hiển thị trên trang bio.</p>
-        <div class="field"><label>Mật khẩu</label><input id="password" type="password" placeholder="Nhập mật khẩu admin" /></div>
-        <button class="btn btn-primary" id="loginBtn" type="button" style="width:100%">Đăng nhập</button>
-        <p id="loginErr" style="color:#b91c1c;margin-top:10px;font-size:13px"></p>
+        <h2 style="margin-bottom:8px">Nhập key để up liên kết</h2>
+        <p class="notice">Chỉ admin có key mới thêm mục vào danh sách ESign / KSign.</p>
+        <div class="field"><label>Key</label><input id="password" type="password" placeholder="Nhập key admin" /></div>
+        <button class="btn btn-primary" id="loginBtn" type="button" style="width:100%">Vào Admin</button>
+        <p id="loginErr" style="color:#fca5a5;margin-top:10px;font-size:13px"></p>
       </div>
     </div>
     <div id="adminView" hidden>
       <div class="label">Admin panel</div>
-      <h2 style="margin-bottom:8px">Quản lý liên kết</h2>
-      <p class="notice">Link lưu trên trình duyệt này và hiện ở trang chủ. Bấm <b>Tải links.json</b> rồi thay file trong repo để mọi người đều thấy.</p>
+      <h2 style="margin-bottom:8px">Up liên kết lên danh sách</h2>
+      <p class="notice">Mục lưu trên trình duyệt này và hiện ở trang chủ. Tải catalog.json rồi thay file trên repo nếu muốn mọi máy đều thấy.</p>
       <div class="card-stack" style="padding:18px;margin-bottom:18px">
-        <h3 style="margin-bottom:12px" id="formTitle">Thêm liên kết mới</h3>
+        <h3 style="margin-bottom:12px" id="formTitle">Thêm mục mới</h3>
         <input type="hidden" id="editId" />
-        <div class="field"><label>Tiêu đề</label><input id="title" placeholder="Ví dụ: Kênh thông báo" /></div>
-        <div class="field"><label>Mô tả ngắn</label><input id="subtitle" placeholder="t.me/..." /></div>
-        <div class="field"><label>URL</label><input id="url" placeholder="https://..." /></div>
-        <div class="field"><label>Icon (emoji)</label><input id="icon" placeholder="📢" maxlength="4" /></div>
+        <div class="field"><label>Nhóm</label><select id="group"><option value="esign">ESign</option><option value="ksign">KSign</option></select></div>
+        <div class="field"><label>Tiêu đề</label><input id="title" placeholder="Tiêu đề" /></div>
+        <div class="field"><label>Mô tả</label><input id="subtitle" placeholder="Mô tả" /></div>
+        <div class="field"><label>Link</label><input id="url" placeholder="https://..." /></div>
         <div class="admin-toolbar">
-          <button class="btn btn-primary" id="saveBtn" type="button">Lưu liên kết</button>
+          <button class="btn btn-primary" id="saveBtn" type="button">Lưu lên web</button>
           <button class="btn btn-ghost" id="resetBtn" type="button">Xóa form</button>
         </div>
       </div>
       <div class="admin-toolbar">
-        <button class="btn btn-ghost" id="exportBtn" type="button">Tải links.json</button>
-        <button class="btn btn-ghost" id="copyBtn" type="button">Sao chép JSON</button>
+        <button class="btn btn-ghost" id="exportBtn" type="button">Tải catalog.json</button>
         <button class="btn btn-danger" id="logoutBtn" type="button">Đăng xuất</button>
       </div>
-      <div class="label">Danh sách đang hiển thị</div>
+      <div class="label">Đã up</div>
       <div class="card-stack" id="adminList"></div>
     </div>
   </main>
   <script src="app.js"></script>
   <script>
-    const ADMIN_PASSWORD = "DuyAdmin2026";
+    const ADMIN_KEY = "duyle";
     const AUTH_KEY = "duy_bio_admin_ok";
     const $ = id => document.getElementById(id);
-    document.documentElement.setAttribute("data-theme", localStorage.getItem("theme") || "light");
-    $("themeBtn").onclick = () => {
-      const next = document.documentElement.getAttribute("data-theme") === "dark" ? "light" : "dark";
-      document.documentElement.setAttribute("data-theme", next);
-      localStorage.setItem("theme", next);
-    };
+    document.documentElement.setAttribute("data-theme", localStorage.getItem("theme") || "dark");
     function isAuthed() { return sessionStorage.getItem(AUTH_KEY) === "1"; }
-    function showView() {
-      $("loginView").hidden = isAuthed();
-      $("adminView").hidden = !isAuthed();
-      if (isAuthed()) renderAdmin();
-    }
-    async function currentLinks() { return Bio.getLinks(); }
+    function showView() { $("loginView").hidden = isAuthed(); $("adminView").hidden = !isAuthed(); if (isAuthed()) renderAdmin(); }
     async function renderAdmin() {
-      const links = await currentLinks();
+      const items = await Bio.getCatalog();
       const root = $("adminList");
-      if (!links.length) { root.innerHTML = '<div class="admin-item"><span>Chưa có liên kết.</span></div>'; return; }
-      root.innerHTML = links.map(item => `
-        <div class="admin-item"><div class="row"><div><strong>${item.icon} ${escapeHtml(item.title)}</strong><div style="color:var(--muted);font-size:12px;margin-top:4px">${escapeHtml(item.url)}</div></div><div style="display:flex;gap:8px"><button class="btn btn-ghost" data-edit="${item.id}" type="button">Sửa</button><button class="btn btn-danger" data-del="${item.id}" type="button">Xóa</button></div></div></div>
-      `).join("");
+      if (!items.length) { root.innerHTML = '<div class="admin-item">Chưa có mục.</div>'; return; }
+      root.innerHTML = items.map(item => `<div class="admin-item"><div class="row"><div><strong>${item.group.toUpperCase()} · ${escapeHtml(item.title)}</strong><div style="color:var(--muted);font-size:12px;margin-top:4px">${escapeHtml(item.url)}</div></div><div style="display:flex;gap:8px"><button class="btn btn-ghost" data-edit="${item.id}" type="button">Sửa</button><button class="btn btn-danger" data-del="${item.id}" type="button">Xóa</button></div></div></div>`).join("");
       root.querySelectorAll("[data-edit]").forEach(btn => btn.onclick = async () => {
-        const item = (await currentLinks()).find(x => x.id === btn.dataset.edit);
-        if (!item) return;
-        $("editId").value = item.id; $("title").value = item.title; $("subtitle").value = item.subtitle; $("url").value = item.url; $("icon").value = item.icon;
-        $("formTitle").textContent = "Sửa liên kết";
+        const item = (await Bio.getCatalog()).find(x => x.id === btn.dataset.edit); if (!item) return;
+        $("editId").value = item.id; $("group").value = item.group; $("title").value = item.title; $("subtitle").value = item.subtitle; $("url").value = item.url; $("formTitle").textContent = "Sửa mục";
       });
       root.querySelectorAll("[data-del]").forEach(btn => btn.onclick = async () => {
-        if (!confirm("Xóa liên kết này?")) return;
-        Bio.writeLocal((await currentLinks()).filter(x => x.id !== btn.dataset.del));
-        renderAdmin();
+        if (!confirm("Xóa mục này?")) return;
+        Bio.saveCatalog((await Bio.getCatalog()).filter(x => x.id !== btn.dataset.del)); renderAdmin();
       });
     }
-    function clearForm() {
-      $("editId").value = $("title").value = $("subtitle").value = $("url").value = $("icon").value = "";
-      $("formTitle").textContent = "Thêm liên kết mới";
-    }
-    $("loginBtn").onclick = () => {
-      if ($("password").value === ADMIN_PASSWORD) { sessionStorage.setItem(AUTH_KEY, "1"); $("loginErr").textContent = ""; showView(); }
-      else $("loginErr").textContent = "Sai mật khẩu.";
-    };
+    function clearForm() { $("editId").value = $("title").value = $("subtitle").value = $("url").value = ""; $("group").value = "esign"; $("formTitle").textContent = "Thêm mục mới"; }
+    $("loginBtn").onclick = () => { if ($("password").value.trim() === ADMIN_KEY) { sessionStorage.setItem(AUTH_KEY, "1"); $("loginErr").textContent = ""; showView(); } else $("loginErr").textContent = "Sai key."; };
     $("password").addEventListener("keydown", e => { if (e.key === "Enter") $("loginBtn").click(); });
     $("resetBtn").onclick = clearForm;
     $("logoutBtn").onclick = () => { sessionStorage.removeItem(AUTH_KEY); showView(); };
     $("saveBtn").onclick = async () => {
       const title = $("title").value.trim(); const url = $("url").value.trim();
-      if (!title || !url) { alert("Cần nhập tiêu đề và URL."); return; }
-      const links = await currentLinks();
-      const id = $("editId").value || "link-" + Date.now();
-      const item = { id, title, subtitle: $("subtitle").value.trim() || url.replace(/^https?:\/\//, ""), url, icon: $("icon").value.trim() || "🔗", accent: "#7c5cff" };
-      const idx = links.findIndex(x => x.id === id);
-      if (idx >= 0) links[idx] = item; else links.push(item);
-      Bio.writeLocal(links); clearForm(); renderAdmin();
+      if (!title || !url) { alert("Cần tiêu đề và link."); return; }
+      const items = await Bio.getCatalog();
+      const id = $("editId").value || "item-" + Date.now();
+      const item = { id, group: $("group").value, title, subtitle: $("subtitle").value.trim(), url };
+      const idx = items.findIndex(x => x.id === id); if (idx >= 0) items[idx] = item; else items.push(item);
+      Bio.saveCatalog(items); clearForm(); renderAdmin();
     };
     $("exportBtn").onclick = async () => {
-      const payload = { updatedAt: new Date().toISOString(), links: await currentLinks() };
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" }));
-      a.download = "links.json"; a.click();
-    };
-    $("copyBtn").onclick = async () => {
-      const payload = { updatedAt: new Date().toISOString(), links: await currentLinks() };
-      await navigator.clipboard.writeText(JSON.stringify(payload, null, 2));
-      alert("Đã sao chép JSON.");
+      const payload = { updatedAt: new Date().toISOString(), items: await Bio.getCatalog() };
+      const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" })); a.download = "catalog.json"; a.click();
     };
     showView();
   </script>
