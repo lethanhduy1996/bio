@@ -1,0 +1,29 @@
+{
+  "updatedAt": "2026-09-27T00:00:00+07:00",
+  "links": [
+    {
+      "id": "tg-channel",
+      "title": "Kênh thông báo chính thức",
+      "subtitle": "t.me/ipahackgameioss",
+      "url": "https://t.me/ipahackgameioss",
+      "icon": "📢",
+      "accent": "#229ed9"
+    },
+    {
+      "id": "tg-chat",
+      "title": "Nhóm chat",
+      "subtitle": "t.me/ipahackgameios",
+      "url": "https://t.me/ipahackgameios",
+      "icon": "💬",
+      "accent": "#2ea6ff"
+    },
+    {
+      "id": "tg-admin",
+      "title": "Liên hệ Admin",
+      "subtitle": "@lethanhduyy",
+      "url": "https://t.me/lethanhduyy",
+      "icon": "👤",
+      "accent": "#7c5cff"
+    }
+  ]
+}

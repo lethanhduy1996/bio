@@ -1,21 +1,22 @@
 # Bio — Duy Lê Thành
 
-Trang bio cá nhân phong cách tương tự [khoindvn.io.vn](https://khoindvn.io.vn): hero tối, badge xác minh, icon mạng xã hội, thẻ liên kết, thanh kỹ năng, đổi ngôn ngữ VI/EN và theme sáng/tối.
+Trang bio + khu vực admin để đăng liên kết.
 
-## Xem nhanh
+## Giới thiệu cố định
+- Kênh: https://t.me/ipahackgameioss
+- Chat: https://t.me/ipahackgameios
+- Admin: https://t.me/lethanhduyy (`@lethanhduyy`)
 
-Mở file `index.html` bằng trình duyệt, hoặc host bằng GitHub Pages.
+## Admin
+Mở `admin.html`
 
-## Tùy chỉnh
-
-Sửa trong `index.html`:
-
-- Tên, mô tả, ảnh đại diện
-- Link X / GitHub / Facebook / Telegram / Zalo / email trong mảng `LINKS` và các nút `.social`
-- Thanh kỹ năng trong phần `#skills`
+- Mật khẩu mặc định: `DuyAdmin2026` (đổi trong `admin.html`, biến `ADMIN_PASSWORD`)
+- Thêm / sửa / xóa link
+- Lưu trên trình duyệt (localStorage) → trang chủ hiện ngay trên máy đó
+- Bấm **Tải links.json** rồi thay file `links.json` trong repo để mọi người đều thấy khi host GitHub Pages
 
 ## GitHub Pages
-
-1. Repo: https://github.com/lethanhduy1996/bio
-2. Settings → Pages → Deploy from branch `main` / folder `/ (root)`
-3. Site sẽ chạy tại `https://lethanhduy1996.github.io/bio/`
+Repo: https://github.com/lethanhduy1996/bio
+Settings → Pages → branch `main` / root
+URL: https://lethanhduy1996.github.io/bio/
+Admin: https://lethanhduy1996.github.io/bio/admin.html
